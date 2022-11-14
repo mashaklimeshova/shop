@@ -13,16 +13,18 @@ class Shop{
 }
 
 class Client extends Person{
+    public int i;
 
+    int cart_id;
 
     public Client(int id, String fullName, String Address, String telephone) {
         super(id, fullName, Address, telephone);
+        this.cart_id=i;
+        i++;
     }
 }
 class Cart{
 
-    Random rand = new Random();
-    int cart_id=rand.nextInt(200);
 
     Client client;
     public Cart(Client client) {
@@ -30,7 +32,7 @@ class Cart{
 
     }
     void print(){
-        System.out.println(cart_id);
+        System.out.println(client.cart_id);
     }
 }
 
