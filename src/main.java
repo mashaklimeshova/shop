@@ -1,3 +1,5 @@
+import java.util.Random;
+
 class Shop{
     String name;
     String Address;
@@ -12,11 +14,23 @@ class Shop{
 
 class Client extends Person{
 
-    int cart_id;
 
-    public Client(int id, String fullName, String Address, String telephone, int cart_id) {
+    public Client(int id, String fullName, String Address, String telephone) {
         super(id, fullName, Address, telephone);
-        this.cart_id=cart_id;
+    }
+}
+class Cart{
+
+    Random rand = new Random();
+    int cart_id=rand.nextInt(200);
+
+    Client client;
+    public Cart(Client client) {
+        this.client=client;
+
+    }
+    void print(){
+        System.out.println(cart_id);
     }
 }
 
@@ -24,6 +38,14 @@ class Client extends Person{
 
 public class main {
     public static void main(String[] args) {
-        System.out.println("helloworld");
+        Client bob = new Client(1,"dffd","fgfg","54964");
+        Cart cart = new Cart(bob);
+        Cart cart2 = new Cart(bob);
+        Cart cart1 = new Cart(bob);
+        cart.print();
+        cart1.print();
+        cart2.print();
+
+
     }
 }
