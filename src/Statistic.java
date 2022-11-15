@@ -1,0 +1,4 @@
+interface Statistic {
+    void stats();
+
+}
