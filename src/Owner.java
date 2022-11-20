@@ -1,8 +1,8 @@
 class Owner extends Person {
-    String shop_name;
+    Shop shop;
 
-    public Owner(String fullName, String Address, String telephone, String shop_name) {
+    public Owner(String fullName, String Address, String telephone,Shop shop) {
         super(fullName, Address, telephone);
-        this.shop_name = shop_name;
+        this.shop = shop;
     }
 }

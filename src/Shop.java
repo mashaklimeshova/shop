@@ -1,12 +1,10 @@
 class Shop implements Information,Statistic {
     String name;
     String Address;
-    Owner owner;
 
-    public Shop(String name, String Address, Owner owner) {
+    public Shop(String name, String Address) {
         this.name = name;
         this.Address = Address;
-        this.owner = owner;
 
     }
 

@@ -1,30 +1,40 @@
+import java.awt.*;
+import java.util.ArrayList;
+
 class Cart {
 
 
     Client client;
-    public static int global_i=0;
-    public int i;
-
-    Products[] products = new Products[100];
+    ArrayList<Products> products = new ArrayList<Products>();
 
 
     public Cart(Client client) {
         this.client = client;
 
     }
-    void addProduct(Product product, int amount){
-        i=global_i;
-        products[i]= new Products(product,amount);
-        global_i++;
+    void addProduct(Product newProduct, int amount){
+        int check=0;
+        for (int i=0;i<products.size();i++) {
+            if (products.get(i).product.name == newProduct.name) {
+                products.get(i).amount = products.get(i).amount + amount;
+                check = 1;
+            }
+        }
+
+        if (check==0) products.add(new Products(newProduct,amount));
 
     }
 
-    void clearCart(Client client) {
+    void clearCart() {
+        products.clear();
 
 
     }
 
-    void deleteItem(Client client) {
+    void deleteItem(int id) {
+        products.remove(id);
+
+
 
     }
 
@@ -32,9 +42,14 @@ class Cart {
 
     }
     void showProducts(){
-        for (int j=0;j<global_i;j++){
-            System.out.println(products[j].product.name + " " + products[j].amount);
+        if (products.size()==0) System.out.println("Cart is empty");
+        else
+            for (int j=0;j<products.size();j++){
+            System.out.println(products.get(j).product.name + " " + products.get(j).amount);
         }
 
+    }
+    void changeAmount (int id, int newAmount){
+        products.get(id).amount=newAmount;
     }
 }
