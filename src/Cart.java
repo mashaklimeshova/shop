@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.ArrayList;
 
 class Cart {
@@ -34,20 +33,26 @@ class Cart {
     void deleteItem(int id) {
         products.remove(id);
 
-
-
     }
 
-    void createOrder() {
+    Order createOrder() {
+        Order order = new Order (this.client);
 
+        return order;
     }
     void showProducts(){
+        int total=0;
         if (products.size()==0) System.out.println("Cart is empty");
-        else
-            for (int j=0;j<products.size();j++){
-            System.out.println(products.get(j).product.name + " " + products.get(j).amount);
+        else {
+            System.out.printf("%-10s | %6s |%8s\n", "Item", "amount","price");
+            System.out.printf("-----------------------------\n");
+            for (int j = 0; j < products.size(); j++) {
+                total = total + products.get(j).product.price * products.get(j).amount;
+                System.out.printf("%-10s | %6d |%8d\n",products.get(j).product.name, products.get(j).amount,products.get(j).product.price * products.get(j).amount);
+            }
+            System.out.printf("-----------------------------\n");
+            System.out.println("Total:" + total);
         }
-
     }
     void changeAmount (int id, int newAmount){
         products.get(id).amount=newAmount;
