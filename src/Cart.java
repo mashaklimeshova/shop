@@ -3,12 +3,14 @@ import java.util.ArrayList;
 class Cart {
 
 
-    Client client;
+    protected int i=0;
+    public int cart_id;
     ArrayList<Products> products = new ArrayList<Products>();
 
 
-    public Cart(Client client) {
-        this.client = client;
+    public Cart() {
+        this.cart_id=i;
+        i++;
 
     }
     void addProduct(Product newProduct, int amount){
@@ -50,11 +52,7 @@ class Cart {
 
     }
 
-    Order createOrder() {
-        Order order = new Order (this.client);
 
-        return order;
-    }
     void showProducts(){
         int total=0;
         if (products.size()==0) System.out.println("Cart is empty");

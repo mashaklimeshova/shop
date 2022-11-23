@@ -1,9 +1,13 @@
+import java.util.Random;
+
 class Order implements Statistic {
     int cart_id;
+    Random rand = new Random();
     public static int i = 49;
     int orderId;
-    public Order(Client client) {
-        this.cart_id=client.cart_id;
+    Cart cart;
+    public Order(Cart cart) {
+        this.cart=cart;
         orderId=i;
         i++;
 
