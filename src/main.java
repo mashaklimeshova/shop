@@ -6,7 +6,7 @@ public class main {
         Shop six = new Shop ("Шестерочка","Moscow");
         Owner owner = new Owner ("Ivanov Ivan Ivanovich", "Moscow", "89451234567", six);
     }
-    static void fill_Shop(ArrayList<Product> availableProducts){
+    static void fillShop(ArrayList<Product> availableProducts){
         Product product = new Product("Apple", "food", 52);
         Product product1 = new Product("Cheese", "food", 10);
         Product product2 = new Product("Banana", "food", 50);
@@ -58,7 +58,7 @@ public class main {
                             System.out.println((i + 1) + ". " + availableProducts.get(i).name);
                         }
                         int id = scanner.nextInt();
-                        System.out.println("Amount:");
+                        System.out.print("Amount: ");
                         int amount = scanner.nextInt();
                         cart.addProduct(availableProducts.get(id - 1), amount);
                         System.out.println("Do you want to continue? \n 1. yes \n 2. no ");
@@ -72,24 +72,54 @@ public class main {
                 cases(cart, availableProducts);
                 break;
             case (3):
-                System.out.print("Choose product ");
-                cart.showProducts();
-                String prod = scanner.nextLine();
-                System.out.print("Enter new amount ");
-                int newAmount = scanner.nextInt();
-                for (int i=0;i<cart.products.size();i++){
-                    if (cart.products.get(i).product.name==prod);
-                     cart.changeAmount(i,newAmount);
+                while (true) {
+                    cart.showProducts();
+                    System.out.print("Choose product ");
+                    String prod = scanner.nextLine();
+                    if (cart.findItem(prod)) {
+                        System.out.print("Enter new amount ");
+                        int newAmount = scanner.nextInt();
+                        cart.changeAmount(prod,newAmount);
+                        break;
 
+                    }
+                    else System.out.println("There is no such product. Try again.");
                 }
                 cart.showProducts();
                 cases(cart, availableProducts);
                 break;
             case(4):
+                System.out.print("Enter your full name:");
+                String fullName=scanner.nextLine();
+                fullName=scanner.nextLine();
+                System.out.print("Enter your address:");
+                String address;
+                address=scanner.nextLine();
+                System.out.print("Enter your telephone:");
+                String telephone;
+                telephone=scanner.nextLine();
+
+                cart.client.fullName=fullName;
+                cart.client.telephone=telephone;
+                cart.client.Address=address;
+
                 Order newOrder = cart.createOrder();
-                System.out.println(newOrder.orderId);
+                System.out.println(newOrder.orderId + " " + newOrder.cart_id + " " + cart.client.fullName);
                 break;
             case(5):
+                while (true) {
+                    cart.showProducts();
+                    System.out.print("Choose product ");
+                    String prod = scanner.nextLine();
+                    if (cart.findItem(prod)) {
+                        cart.deleteItem(prod);
+                        break;
+
+                    }
+                    else System.out.println("There is no such product. Try again.");
+                }
+                cart.showProducts();
+                cases(cart, availableProducts);
                 break;
             case(6):
                 cart.clearCart();
@@ -104,13 +134,12 @@ public class main {
 
     public static void main(String[] args) {
         makeShop();
-        Scanner scanner = new Scanner(System.in);
         ArrayList<Product> availableProducts = new ArrayList<Product>();
 
         Client client = new Client("default", "default", "default");
         Cart cart = (Cart) terminal();
 
-       fill_Shop(availableProducts);
+       fillShop(availableProducts);
        cases(cart,availableProducts);
 
 

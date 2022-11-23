@@ -29,9 +29,24 @@ class Cart {
 
 
     }
+    boolean findItem(String product){
+        boolean flag=false;
+        for (int i = 0; i < products.size(); i++) {
+            if (product.equalsIgnoreCase(products.get(i).product.name)) {
+                flag=true;
+                break;
+            }
+            else flag=false;
+        }
+        return flag;
+    }
 
-    void deleteItem(int id) {
-        products.remove(id);
+    void deleteItem(String product) {
+        for (int i = 0; i < products.size(); i++) {
+            if (product.equalsIgnoreCase(products.get(i).product.name)) {
+                products.remove(i);
+            }
+        }
 
     }
 
@@ -54,7 +69,12 @@ class Cart {
             System.out.println("Total:" + total);
         }
     }
-    void changeAmount (int id, int newAmount){
-        products.get(id).amount=newAmount;
+    void changeAmount (String product, int newAmount){
+        for (int i = 0; i < products.size(); i++) {
+            if (product.equalsIgnoreCase(products.get(i).product.name)) {
+                products.get(i).amount=newAmount;
+            }
+        }
+
     }
 }
