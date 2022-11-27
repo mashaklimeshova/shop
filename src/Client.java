@@ -24,5 +24,17 @@ class Client extends Person implements Information {
 
     public void showInfo() {
 
+        if (orders.size() == 0) {
+            System.out.println("You don't have any orders");
+        } else if (orders.size() == 1) {
+            System.out.println("Order of " + this.fullName + " is:");
+            System.out.println(orders.get(0).orderId);
+        } else {
+            System.out.println("Orders of " + this.fullName + " are:");
+            for (int i = 0; i < orders.size(); i++) {
+                System.out.println(orders.get(i).orderId);
+            }
+
+        }
     }
 }
