@@ -2,17 +2,8 @@ import java.util.ArrayList;
 
 class Cart {
 
-
-    protected int i=0;
-    public int cart_id;
     ArrayList<Products> products = new ArrayList<Products>();
 
-
-    public Cart() {
-        this.cart_id=i;
-        i++;
-
-    }
     void addProduct(ArrayList<Product> availableProducts, Product newProduct, int amount) {
         int check = 0;
         if (availableProducts.get(newProduct.product_id).amount < amount) System.out.println("Amount is not available now. Try to add less");

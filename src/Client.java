@@ -1,23 +1,25 @@
 import java.util.ArrayList;
 
 class Client extends Person implements Information {
-    public static int gl_cart_id = 0;
-    int cart_id;
+
     Cart cart;
     ArrayList<Order> orders = new ArrayList<>();
     public Client(String fullName, String Address, String telephone,Cart cart) {
         super(fullName, Address, telephone);
-        this.cart_id = gl_cart_id;
         this.cart=cart;
-
-        gl_cart_id++;
+        
     }
 
-    Order createOrder() {
+    Order createOrder(ArrayList<Product> availableProducts) {
         Order order = new Order (this.cart);
         orders.add(order);
-        for (int i=0;i<orders.size();i++){
-            System.out.println(orders.get(i).orderId);
+        System.out.println("Your order number is " + orders.get(orders.size()-1).orderId);
+        for (int i=0;i<availableProducts.size();i++){
+            for (int j=0;j<this.cart.products.size();j++){
+                if (this.cart.products.get(j).product.product_id==availableProducts.get(i).product_id){
+                        availableProducts.get(i).amount=availableProducts.get(i).amount-this.cart.products.get(j).amount;
+                }
+            }
         }
         return order;
     }
