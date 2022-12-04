@@ -1,11 +1,29 @@
+import javax.swing.*;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
+
 
 public class main {
     static Shop makeShop(){
         Owner owner = new Owner ("Ivanov Ivan Ivanovich", "Moscow", "89451234567");
         Shop six = new Shop ("Шестерочка","Moscow",owner);
         return six;
+    }
+
+    static void scanClients(ArrayList<Client> clients){
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(new File("ClientsDataBase"));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Файл не найден");
+        }
+        while (scanner.hasNext()) {
+            Cart cart = new Cart();
+            Client client = new Client(scanner.next() + " " + scanner.next(), scanner.next(), scanner.next(), cart);
+            clients.add(client);
+        }
     }
     static void fillShop(ArrayList<Product> availableProducts){
         Product product = new Product("Apple", "food", 52,100);
@@ -18,26 +36,39 @@ public class main {
 
     }
 
-     static Object terminal(ArrayList<Client> clients ){
+     static void terminal(ArrayList<Client> clients,ArrayList<Product> availableProducts ){
         Scanner scanner = new Scanner(System.in);
         System.out.println("");
         System.out.println("1. Start shopping\n2. Continue shopping\n3. Show information about the shop\n4. Finish");
         int key = scanner.nextInt();
+        ArrayList<Client> existingClients = new ArrayList<>();
+        scanClients(existingClients);
 
         switch (key){
             case (1):
-                Client client = null;
-                Cart cart = new Cart();
-                return cart;
-
+                Client client = new Client("default","default","default",null);
+                client.cart= new Cart();
+                cases(availableProducts, client, existingClients);
             case (2):
-                System.out.println("hello motherfucker");
-                return clients.get(0).cart;
+                int flag=-1;
+                while (flag==-1) {
+                    System.out.print("Enter your name: ");
+                    String firstName = scanner.next();
+                    String secondName = scanner.next();
+                    for (int i = 0; i < existingClients.size(); i++) {
+                        if ((existingClients.get(i).fullName.equalsIgnoreCase(firstName + " " + secondName)) || (existingClients.get(i).fullName.equalsIgnoreCase(secondName + " " + firstName))) {
+                            flag = i;
+
+                        }
+                    }
+                    if (flag == -1) System.out.println("Invalid name");
+                    else cases(availableProducts,existingClients.get(flag), existingClients);
+                }
 
             case(3):
                 Shop shop = makeShop();
                 shop.showInfo();
-                terminal(clients);
+                terminal(existingClients,availableProducts);
 
 
             case(4):
@@ -46,12 +77,11 @@ public class main {
 
             default:
                System.out.println("Invalid input");
-               terminal(clients);
+               terminal(existingClients,availableProducts);
         }
 
-         return null;
      }
-     static void cases(Cart cart, ArrayList<Product> availableProducts,Client client,ArrayList clients){
+     static void cases(ArrayList<Product> availableProducts,Client client,ArrayList<Client> clients){
         Scanner scanner = new Scanner(System.in);
         System.out.println("1. Add product\n2. Show your cart\n3. Change an amount\n4. Make order\n5. Delete item\n6. Clear cart\n7. Show your orders\n8. Exit to main menu");
         int key = scanner.nextInt();
@@ -59,110 +89,146 @@ public class main {
             case(1):
                 int t = 1;
                     while (t == 1) {
-                        System.out.println("What product do you want to add");
-                        System.out.printf("%-2s | %10s | %4s | %4s\n"," ", "name", "price", "amount");
+                        System.out.println("What product do you want to add (choose number). If you want to go back, enter BACK:");
+                        System.out.printf("%-2s | %10s | %4s | %4s\n", " ", "name", "price", "amount");
                         System.out.printf("-----------------------------\n");
                         for (int i = 0; i < availableProducts.size(); i++) {
                             System.out.printf("%-2s | %10s | %4d | %4d\n", (i + 1), availableProducts.get(i).name, availableProducts.get(i).price, availableProducts.get(i).amount);
                         }
-                        int id = scanner.nextInt();
-                        if (id<=0 || id>= availableProducts.size()) {System.out.println ("No such product"); cases(cart, availableProducts,client,clients); break;}
-                        System.out.print("Amount: ");
-                        int amount = scanner.nextInt();
-                        cart.addProduct(availableProducts, availableProducts.get(id - 1), amount);
-                        System.out.println("Do you want to continue? \n 1. yes \n 2. no ");
-                        t = scanner.nextInt();
-                        if (t == 2)  {cases(cart, availableProducts,client,clients); break;}
+                        Scanner sc = new Scanner(System.in);
+                        String enter = sc.next();
+                        try {
+                            Integer id = Integer.valueOf(enter);
+                            if (id <= 0 || id >= availableProducts.size()) {
+                                System.out.println("No such product");
+                                cases(availableProducts, client, clients);
+                                break;
+                            }
+                            System.out.print("Amount: ");
+                            int amount = scanner.nextInt();
+                            client.cart.addProduct(availableProducts, availableProducts.get(id - 1), amount);
+                            System.out.println("Do you want to continue? \n 1. yes \n 2. no ");
+                            t = scanner.nextInt();
+                            if (t == 2) {
+                                cases(availableProducts, client, clients);
+                                break;
+                            }
+                        } catch (NumberFormatException e) {
+                            if (enter.equalsIgnoreCase("back")) {
+                                cases(availableProducts, client, clients);
+                                break;
+                            } else {
+                                System.out.println("Invalid input");
+                                cases(availableProducts, client, clients);
+                                break;
+                            }
 
-                }
+                        }
+                    }
             case(2):
-                cart.showProducts();
-                cases(cart, availableProducts,client,clients);
+                client.cart.showProducts();
+                cases(availableProducts,client,clients);
                 break;
             case (3):
+                Scanner sc = new Scanner(System.in);
                 while (true) {
-                    cart.showProducts();
+                    client.cart.showProducts();
                     System.out.print("Choose product ");
-                    String prod = scanner.nextLine();
-                    if (cart.findItem(prod)) {
+                    String prod = sc.nextLine();
+                    if (client.cart.findItem(prod)) {
                         System.out.print("Enter new amount ");
-                        int newAmount = scanner.nextInt();
-                        cart.changeAmount(availableProducts,prod,newAmount);
+                        int newAmount = sc.nextInt();
+                        client.cart.changeAmount(availableProducts,prod,newAmount);
                         break;
 
                     }
                     else System.out.println("There is no such product. Try again.");
                 }
-                cart.showProducts();
-                cases(cart, availableProducts,client,clients);
+                client.cart.showProducts();
+                cases(availableProducts,client,clients);
                 break;
             case(4):
-                if (client.fullName=="default") {
-                    System.out.print("Enter your full name:");
-                    String fullName = scanner.nextLine();
-                    fullName = scanner.nextLine();
-                    System.out.print("Enter your address:");
-                    String address;
-                    address = scanner.nextLine();
-                    System.out.print("Enter your telephone:");
-                    String telephone;
-                    telephone = scanner.nextLine();
+                if (!client.cart.products.isEmpty()) {
+                    if (client.fullName == "default") {
+                        System.out.print("Enter your full name (example - Ivanov Ivan):");
+                        String fullName = scanner.nextLine();
+                        fullName = scanner.nextLine();
+                        System.out.print("Enter your address:");
+                        String address;
+                        address = scanner.nextLine();
+                        System.out.print("Enter your telephone:");
+                        String telephone;
+                        telephone = scanner.nextLine();
 
-                    client.fullName = fullName;
-                    client.telephone = telephone;
-                    client.Address = address;
+                        client.fullName = fullName;
+                        client.telephone = telephone;
+                        client.Address = address;
 
-                    clients.add(client);
+                        int a = findClient(clients, client);
+                        if (a == 0) clients.add(client);
+                        else System.out.println("This client already exist. We will place an order for their account");
+                    }
+                    Order newOrder = client.createOrder();
+                    System.out.println("Thanks for your order!");
+                    break;
                 }
-                Order newOrder = client.createOrder();
-                System.out.println(newOrder.orderId + " " + newOrder.cart_id + " " + client.fullName);
-                break;
+                else {
+                    System.out.println("Your cart is empty");
+                    cases(availableProducts,client,clients);
+                    break;
+                }
+
             case(5):
                 while (true) {
-                    cart.showProducts();
+                    client.cart.showProducts();
                     System.out.print("Choose product ");
                     String prod = scanner.nextLine();
-                    if (cart.findItem(prod)) {
-                        cart.deleteItem(prod,availableProducts);
+                    if (client.cart.findItem(prod)) {
+                        client.cart.deleteItem(prod,availableProducts);
                         break;
 
                     }
                     else System.out.println("There is no such product. Try again.");
                 }
-                cart.showProducts();
-                cases(cart, availableProducts,client,clients);
+                client.cart.showProducts();
+                cases(availableProducts,client,clients);
                 break;
             case(6):
-                cart.clearCart(availableProducts);
-                cases(cart, availableProducts,client,clients);
+                client.cart.clearCart(availableProducts);
+                cases(availableProducts,client,clients);
                 break;
             case(7):
                 client.showInfo();
-                cases(cart, availableProducts,client,clients);
+                cases(availableProducts,client,clients);
                 break;
             case(8):
-                cart= (Cart) terminal(clients);
-                cases(cart,availableProducts,client,clients);
+                terminal(clients,availableProducts);
+                cases(availableProducts,client,clients);
             default:
                 System.out.println("Invalid input");
-                cases(cart,availableProducts,client,clients);
+                cases(availableProducts,client,clients);
         }
 
      }
 
+    public static int findClient(ArrayList<Client> clients, Client newClient) {
+        int a=0;
+        for (int i=0; i<clients.size();i++){
+            if (clients.get(i).equals(newClient)) a=1;
+        }
+        return a;
+    }
+
     public static void main(String[] args) {
-        makeShop();
         ArrayList<Product> availableProducts = new ArrayList<Product>();
-
-        Cart cart = new Cart();
-
-        Client client = new Client("default", "default", "default",cart);
+        System.out.println("\nnotice:\nTo work with menus please enter the number of action you want to do.");
+        System.out.println("------------------------------------------------------------------\n\n");
+        Client client = null;
         ArrayList<Client> clients = new ArrayList<Client>();
         System.out.println("Welcome to our shop!\nWhat do you want?");
-        terminal(clients);
-
         fillShop(availableProducts);
-        cases(client.cart,availableProducts,client,clients);
+        terminal(clients,availableProducts);
+
 
 
     }

@@ -21,7 +21,7 @@ class Shop implements Information,Statistic {
     public void showInfo() {
         System.out.println("Name:" + this.name);
         System.out.println("Address:" + this.Address);
-        System.out.println("Owner is " + this.owner.fullName + "and their telephone is " + this.owner.telephone);
+        System.out.println("Owner is " + this.owner.fullName + " and their telephone is " + this.owner.telephone);
 
 
     }

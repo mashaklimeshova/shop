@@ -15,7 +15,7 @@ class Cart {
     }
     void addProduct(ArrayList<Product> availableProducts, Product newProduct, int amount) {
         int check = 0;
-        if (availableProducts.get(newProduct.product_id).amount < amount) System.out.println("Error");
+        if (availableProducts.get(newProduct.product_id).amount < amount) System.out.println("Amount is not available now. Try to add less");
         else {
             for (int i = 0; i < products.size(); i++) {
                 if (products.get(i).product.name == newProduct.name) {
@@ -86,9 +86,11 @@ class Cart {
     void changeAmount(ArrayList<Product> availableProducts, String product, int newAmount){
         for (int i = 0; i < products.size(); i++) {
             if (product.equalsIgnoreCase(products.get(i).product.name)) {
-                    availableProducts.get(i).amount = availableProducts.get(i).amount + products.get(i).amount - newAmount;;
-                    products.get(i).amount=newAmount;
-
+                    if(availableProducts.get(i).amount+products.get(i).amount>=newAmount) {
+                        availableProducts.get(i).amount = availableProducts.get(i).amount + products.get(i).amount - newAmount;
+                        products.get(i).amount = newAmount;
+                    }
+                    else System.out.println("Amount is not available now. Try to add less");
             }
         }
 

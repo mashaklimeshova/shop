@@ -37,4 +37,8 @@ class Client extends Person implements Information {
 
         }
     }
+    public boolean equals(Client client) {
+        if (client.fullName.equalsIgnoreCase(this.fullName)&&client.telephone.equalsIgnoreCase(this.telephone)&&client.Address.equalsIgnoreCase(this.Address))  return true;
+        else return false;
+    }
 }
