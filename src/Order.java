@@ -1,7 +1,6 @@
 import java.util.Random;
-
-class Order implements Statistic {
-    int cart_id;
+//Валявская
+class Order {
     Random rand = new Random();
     int orderId;
     Cart cart;
@@ -11,7 +10,4 @@ class Order implements Statistic {
 
     }
 
-    public void stats() {
-
-    }
 }

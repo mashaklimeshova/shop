@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 import java.util.Objects;
 
-class Cart {
+class Cart implements Cloneable{
 
     ArrayList<Products> products = new ArrayList<>();
-
+    //Валявская
     void addProduct(ArrayList<Product> availableProducts, Product newProduct, int amount) {
         int check = 0;
         if (availableProducts.get(newProduct.product_id).amount < amount) System.out.println("Amount is not available now. Try to add less");
@@ -17,7 +17,6 @@ class Cart {
             }
 
             if (check == 0) {
-
                 products.add(new Products(newProduct, amount));
             }
 
@@ -25,11 +24,11 @@ class Cart {
 
         }
     }
+    //Валявская
     void clearCart(ArrayList<Product> availableProducts) {
 
         for (Products product : products) {
             for (Product availableProduct : availableProducts) {
-                System.out.println(product.product.product_id + " " + availableProduct.product_id);
                 if (product.product.product_id == availableProduct.product_id) {
                     availableProduct.amount = product.amount + availableProduct.amount;
                 }
@@ -39,9 +38,11 @@ class Cart {
 
 
     }
+    //Климешова
     void clearCart(){
             products.clear();
     }
+    //Климешова
     boolean findItem(String product){
         boolean flag=false;
         for (Products value : products) {
@@ -53,10 +54,11 @@ class Cart {
         return flag;
     }
 
+    //Валявская
     void deleteItem(String product, ArrayList<Product> availableProducts) {
         for (int i = 0; i < products.size(); i++) {
             if (product.equalsIgnoreCase(products.get(i).product.name)) {
-                availableProducts.get(i).amount = availableProducts.get(i).amount+ products.get(i).amount;
+                availableProducts.get(products.get(i).product.product_id).amount = availableProducts.get(products.get(i).product.product_id).amount+ products.get(i).amount;
                 products.remove(i);
 
 
@@ -65,7 +67,7 @@ class Cart {
 
     }
 
-
+    //Климешова
     void showProducts(){
         int total=0;
         if (products.size()==0) System.out.println("Cart is empty");
@@ -80,6 +82,7 @@ class Cart {
             System.out.println("Total:" + total);
         }
     }
+    //Климешова
     void changeAmount(ArrayList<Product> availableProducts, String product, int newAmount){
         for (int i = 0; i < products.size(); i++) {
             if (product.equalsIgnoreCase(products.get(i).product.name)) {
@@ -89,6 +92,29 @@ class Cart {
                     }
                     else System.out.println("Amount is not available now. Try to add less");
             }
+        }
+
+    }
+    //Климешова
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Cart cart = (Cart) super.clone();
+        cart.products= (ArrayList<Products>) products.clone();
+        return cart;
+    }
+    //Валявская
+    int getSum(){
+        int sum=0;
+        for (int i=0;i< products.size();i++){
+            sum=products.get(i).product.price*products.get(i).amount+sum;
+        }
+        return sum;
+
+    }
+
+    void getAmount(int amount){
+        for (int i=0;i< products.size();i++){
+            amount=products.get(i).amount+amount;
         }
 
     }

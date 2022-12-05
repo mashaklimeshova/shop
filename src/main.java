@@ -4,13 +4,13 @@ import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-//TODO пробелы в имени и адресе, clear cart,hashcode
+
+//TODO пробелы в имени и адресе,hashcode,статистика по клиенту
 
 public class main {
-    static Shop makeShop(){
-        Owner owner = new Owner ("Ivanov Ivan Ivanovich", "Moscow", "89451234567");
-        return new Shop ("Шестерочка","Moscow",owner);
-    }
+    private static ArrayList<Product> startProducts;
+    private static Shop shop = new Shop();
+
     static void printClients (ArrayList<Client> existingClients) throws IOException {
         try {
             FileWriter fstream1 = new FileWriter("ClientsDataBase");
@@ -76,10 +76,52 @@ public class main {
             clients.addAll(newClients);
         }
     }
-
-     static void terminal(ArrayList<Client> existingClients,ArrayList<Product> availableProducts ){
+    static void shopController(ArrayList<Client> existingClients, ArrayList<Product> availableProducts,ArrayList<Product>startProducts ) throws CloneNotSupportedException {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\n1. Start shopping\n2. Continue shopping\n3. Show information about the shop\n4. Finish");
+        System.out.println("\n1. View products\n2. Show clients\n3. Get stats\n4. Sales report\n5. Go back");
+        try {
+            int key = scanner.nextInt();
+            switch (key){
+                case(1):
+                    System.out.printf("%-2s | %10s | %4s | %4s\n", " ", "name", "price", "amount");
+                    System.out.println("-----------------------------");
+                    for (Product availableProduct : availableProducts) {
+                        System.out.printf("%-2s | %10s | %4d | %4d\n", availableProduct.product_id + 1, availableProduct.name, availableProduct.price, availableProduct.amount);
+                    }
+                    System.out.println("-----------------------------");
+                    shopController(existingClients,availableProducts,startProducts);
+                    break;
+                case(2):
+                    System.out.println("-----------------------------");
+                    for (int i=0;i<existingClients.size();i++){
+                        System.out.println((i+1) + ". " + existingClients.get(i).fullName);
+                    }
+                    System.out.println("-----------------------------");
+                    shopController(existingClients,availableProducts, startProducts);
+                    break;
+                case(3):
+                    shop.stats();
+                    shopController(existingClients,availableProducts,startProducts);
+                    break;
+                case(4):
+                    shop.report(startProducts, availableProducts);
+                    shopController(existingClients,availableProducts,startProducts);
+                    break;
+
+                case(5):
+                    terminal(existingClients,availableProducts);
+
+            }
+        } catch (InputMismatchException e) {
+            System.err.println("Invalid input");
+            shopController(existingClients,availableProducts,startProducts);
+        }
+
+    }
+
+     static void terminal(ArrayList<Client> existingClients, ArrayList<Product> availableProducts) throws CloneNotSupportedException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n1. Start shopping\n2. Continue shopping\n3. Show information about the shop\n4. Owner menu\n5. Finish");
         try{
         int key = scanner.nextInt();
         scanClients(existingClients);
@@ -110,14 +152,25 @@ public class main {
                 }
 
             case(3):
-                Shop shop = makeShop();
                 shop.showInfo();
                 terminal(existingClients,availableProducts);
 
-
             case(4):
+                System.out.println("Enter owner password to manage the shop:");
+                int password= Integer.parseInt(scanner.next());
+                if (password==1234){
+                    shopController(existingClients,availableProducts,startProducts);
+                }
+                else terminal(existingClients,availableProducts);
+            case(5):
                 System.out.println("Good bye");
                 System. exit(0);
+
+            default:
+                System.err.println("Invalid input");
+                terminal(existingClients,availableProducts);
+
+
 
         }} catch (InputMismatchException e) {
             System.err.println("Invalid input");
@@ -127,9 +180,8 @@ public class main {
             System.exit(0);
 
         }
-
      }
-     static void cases(ArrayList<Product> availableProducts,Client client,ArrayList<Client> clients){
+     static void cases(ArrayList<Product> availableProducts,Client client,ArrayList<Client> clients) throws CloneNotSupportedException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("1. Add product\n2. Show your cart\n3. Change an amount\n4. Make order\n5. Delete item\n6. Clear cart\n7. Show your orders\n8. Exit to main menu");
         try{
@@ -167,7 +219,7 @@ public class main {
                             else System.out.println("Invalid input");
                         } catch (NumberFormatException e) {
                             if (!enter.equalsIgnoreCase("back")) {
-                                System.err.println("Invalid input");
+                                System.out.println("Invalid input");
                             }
                             cases(availableProducts, client, clients);
                             break;
@@ -206,18 +258,19 @@ public class main {
                 if (!client.cart.products.isEmpty()) {
                     if (client.fullName.equalsIgnoreCase("default")) {
                         System.out.print("Enter your full name (example - Ivanov Ivan). If it consists of more than one word, enter it using - (example Ivanova-Petrova Maria-Sofia): ");
-                        String fullName = in.nextLine();
+                        String secondName = in.next();
+                        String firstName = in.next();
                         System.out.print("Enter your address: ");
                         String address;
-                        address = in.nextLine();
+                        address = in.next();
                         System.out.print("Enter your telephone: ");
                         String telephone;
-                        telephone = in.nextLine();
+                        telephone = in.next();
                         while (telephone.length()!=11){
                             System.out.print("Enter your telephone again, previous can not be interpreted: ");
-                            telephone = in.nextLine();
+                            telephone = in.next();
                         }
-                        client.fullName = fullName;
+                        client.fullName = secondName + " " + firstName;
                         client.telephone = telephone;
                         client.Address = address;
 
@@ -228,7 +281,7 @@ public class main {
                         }
                         else System.out.println("This client already exist. We will place an order for their account");
                     }
-                    Order newOrder = client.createOrder();
+                    client.createOrder(shop);
                     client.cart.clearCart();
                     printProducts(availableProducts);
                     System.out.println("\nThanks for your order!\n");
@@ -264,9 +317,32 @@ public class main {
                 cases(availableProducts,client,clients);
                 break;
             case(7):
-                client.showInfo();
-                cases(availableProducts,client,clients);
-                break;
+                Scanner enter = new Scanner(System.in);
+                System.out.println("What do you want to see?\n1. Show orders\n2. Get average check\n3. Go back");
+                try {
+                    key = enter.nextInt();
+                    if (key==1){
+                        client.showInfo();
+                        cases(availableProducts, client, clients);
+                        break;
+                    }
+                    else if (key==2){
+                        if (!client.orders.isEmpty()) {
+                            client.stats();
+                        }
+                        else client.showInfo();
+                        cases(availableProducts, client, clients);
+                        break;
+                    }
+                    else if (key==3) {
+                        cases(availableProducts, client, clients);
+                        break;
+                    }
+                } catch (CloneNotSupportedException e) {
+                    System.out.println("Invalid input");
+                    cases(availableProducts,client,clients);
+                }
+
             case(8):
                 scanProducts(availableProducts);
                 terminal(clients,availableProducts);
@@ -297,11 +373,12 @@ public class main {
         return a;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CloneNotSupportedException {
         ArrayList<Product> availableProducts = new ArrayList<>();
         System.out.println("\nnotice:\nTo work with menus please enter the number of action you want to do.");
         System.out.println("------------------------------------------------------------------\n\n");
         scanProducts(availableProducts);
+        startProducts= (ArrayList<Product>) availableProducts.clone();
         ArrayList<Client> clients = new ArrayList<>();
         System.out.println("Welcome to our shop!\nWhat do you want?");
         terminal(clients,availableProducts);
