@@ -1,16 +1,17 @@
 import java.util.ArrayList;
+import java.util.Objects;
 
 class Cart {
 
-    ArrayList<Products> products = new ArrayList<Products>();
+    ArrayList<Products> products = new ArrayList<>();
 
     void addProduct(ArrayList<Product> availableProducts, Product newProduct, int amount) {
         int check = 0;
         if (availableProducts.get(newProduct.product_id).amount < amount) System.out.println("Amount is not available now. Try to add less");
         else {
-            for (int i = 0; i < products.size(); i++) {
-                if (products.get(i).product.name == newProduct.name) {
-                    products.get(i).amount = products.get(i).amount + amount;
+            for (Products product : products) {
+                if (Objects.equals(product.product.name, newProduct.name)) {
+                    product.amount = product.amount + amount;
                     check = 1;
                 }
             }
@@ -26,23 +27,28 @@ class Cart {
     }
     void clearCart(ArrayList<Product> availableProducts) {
 
-        for (int i=0;i<products.size();i++){
-            if (products.get(i).product.product_id==availableProducts.get(i).product_id){
-                availableProducts.get(i).amount=products.get(i).amount+ availableProducts.get(i).amount;
+        for (Products product : products) {
+            for (Product availableProduct : availableProducts) {
+                System.out.println(product.product.product_id + " " + availableProduct.product_id);
+                if (product.product.product_id == availableProduct.product_id) {
+                    availableProduct.amount = product.amount + availableProduct.amount;
+                }
             }
         }
         products.clear();
 
 
     }
+    void clearCart(){
+            products.clear();
+    }
     boolean findItem(String product){
         boolean flag=false;
-        for (int i = 0; i < products.size(); i++) {
-            if (product.equalsIgnoreCase(products.get(i).product.name)) {
-                flag=true;
+        for (Products value : products) {
+            if (product.equalsIgnoreCase(value.product.name)) {
+                flag = true;
                 break;
             }
-            else flag=false;
         }
         return flag;
     }
@@ -65,12 +71,12 @@ class Cart {
         if (products.size()==0) System.out.println("Cart is empty");
         else {
             System.out.printf("%-10s | %6s |%8s \n", "Item", "amount","price");
-            System.out.printf("-----------------------------\n");
-            for (int j = 0; j < products.size(); j++) {
-                total = total + products.get(j).product.price * products.get(j).amount;
-                System.out.printf("%-10s | %6d |%8d\n",products.get(j).product.name, products.get(j).amount,products.get(j).product.price * products.get(j).amount);
+            System.out.println("-----------------------------");
+            for (Products product : products) {
+                total = total + product.product.price * product.amount;
+                System.out.printf("%-10s | %6d |%8d\n", product.product.name, product.amount, product.product.price * product.amount);
             }
-            System.out.printf("-----------------------------\n");
+            System.out.println("-----------------------------");
             System.out.println("Total:" + total);
         }
     }

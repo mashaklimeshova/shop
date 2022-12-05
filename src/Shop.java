@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 class Shop implements Information,Statistic {
@@ -6,7 +5,7 @@ class Shop implements Information,Statistic {
     String Address;
     Owner owner;
 
-    ArrayList<Order> madeOrders = new ArrayList<Order>();
+    ArrayList<Order> madeOrders = new ArrayList<>();
 
     public Shop(String name, String Address, Owner owner) {
         this.name = name;
