@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 class Cart implements Cloneable{
-
     ArrayList<Products> products = new ArrayList<>();
     //Валявская
     void addProduct(ArrayList<Product> availableProducts, Product newProduct, int amount) {
@@ -105,17 +104,18 @@ class Cart implements Cloneable{
     //Валявская
     int getSum(){
         int sum=0;
-        for (int i=0;i< products.size();i++){
-            sum=products.get(i).product.price*products.get(i).amount+sum;
+        for (Products product : products) {
+            sum = product.product.price * product.amount + sum;
         }
         return sum;
 
     }
-
-    void getAmount(int amount){
-        for (int i=0;i< products.size();i++){
-            amount=products.get(i).amount+amount;
+    @Override
+    public int hashCode() {
+        int a=0;
+        for (Products product : products){
+            a=a+product.product.hashCode()*product.product.amount;
         }
-
+        return a+products.size()+11;
     }
 }

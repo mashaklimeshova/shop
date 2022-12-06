@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 //Климешова
 class Product implements Cloneable {
     String name;
@@ -14,8 +13,11 @@ class Product implements Cloneable {
         this.product_id=product_id;
     }
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        Product product = (Product) super.clone();
-        return product;
+    public Product clone() throws CloneNotSupportedException {
+        return (Product) super.clone();
+    }
+    @Override
+    public int hashCode() {
+        return name.length()+(amount%3);
     }
 }

@@ -5,11 +5,10 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 
-//TODO пробелы в имени и адресе,hashcode,статистика по клиенту
+//TODO пробелы в имени и адресе,HASHCODE
 
 public class main {
-    private static ArrayList<Product> startProducts;
-    private static Shop shop = new Shop();
+    private static final Shop shop = new Shop();
 
     static void printClients (ArrayList<Client> existingClients) throws IOException {
         try {
@@ -58,6 +57,7 @@ public class main {
 
     static void scanClients(ArrayList<Client> clients){
         Scanner scanner = null;
+        int i=0;
         ArrayList<Client> newClients = new ArrayList<>();
         try {
             scanner = new Scanner(new File("ClientsDataBase"));
@@ -66,10 +66,10 @@ public class main {
         }
         if (scanner != null) {
             while (scanner.hasNext()) {
-
                 Cart cart = new Cart();
-                Client client = new Client(scanner.next() + " " + scanner.next(), scanner.next(), scanner.next(), cart);
+                Client client = new Client(i, scanner.next() + " " + scanner.next(), scanner.next(), scanner.next(), cart);
                 newClients.add(client);
+                i++;
             }
         }
         if (clients.isEmpty()){
@@ -100,16 +100,29 @@ public class main {
                     shopController(existingClients,availableProducts, startProducts);
                     break;
                 case(3):
-                    shop.stats();
-                    shopController(existingClients,availableProducts,startProducts);
-                    break;
+                    Scanner enter = new Scanner(System.in);
+                    System.out.println("\n1. Get all stats\n2. Get client stats\n3. Go back");
+                    int l = enter.nextInt();
+                    switch (l) {
+                        case (1) -> {
+                            shop.stats();
+                            shopController(existingClients, availableProducts, startProducts);
+                        }
+                        case (2) -> {
+                            System.out.print("Enter client id: ");
+                            int id = enter.nextInt();
+                            shop.stats(id);
+                            shopController(existingClients, availableProducts, startProducts);
+                        }
+                        case (3) -> shopController(existingClients, availableProducts, startProducts);
+                    }
                 case(4):
                     shop.report(startProducts, availableProducts);
                     shopController(existingClients,availableProducts,startProducts);
                     break;
 
                 case(5):
-                    terminal(existingClients,availableProducts);
+                    terminal(existingClients,availableProducts,startProducts);
 
             }
         } catch (InputMismatchException e) {
@@ -119,7 +132,7 @@ public class main {
 
     }
 
-     static void terminal(ArrayList<Client> existingClients, ArrayList<Product> availableProducts) throws CloneNotSupportedException {
+     static void terminal(ArrayList<Client> existingClients, ArrayList<Product> availableProducts,ArrayList<Product> startProducts) throws CloneNotSupportedException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n1. Start shopping\n2. Continue shopping\n3. Show information about the shop\n4. Owner menu\n5. Finish");
         try{
@@ -127,9 +140,9 @@ public class main {
         scanClients(existingClients);
         switch (key){
             case (1):
-                Client client = new Client("default","default","default",null);
+                Client client = new Client(existingClients.size(), "default","default","default",null);
                 client.cart= new Cart();
-                cases(availableProducts, client, existingClients);
+                cases(availableProducts, client, existingClients, startProducts);
             case (2):
                 int flag=-1;
                 while (flag==-1) {
@@ -137,7 +150,7 @@ public class main {
                     String firstName = scanner.next();
                     String secondName = scanner.next();
                     if (firstName.equalsIgnoreCase("GO") && secondName.equalsIgnoreCase("back")) {
-                        terminal(existingClients, availableProducts);
+                        terminal(existingClients, availableProducts,startProducts);
                         break;
                     } else {
                         for (int i = 0; i < existingClients.size(); i++) {
@@ -147,13 +160,13 @@ public class main {
                             }
                         }
                         if (flag == -1) System.out.println("Invalid name");
-                        else cases(availableProducts, existingClients.get(flag), existingClients);
+                        else cases(availableProducts, existingClients.get(flag), existingClients, startProducts);
                     }
                 }
 
             case(3):
                 shop.showInfo();
-                terminal(existingClients,availableProducts);
+                terminal(existingClients,availableProducts,startProducts);
 
             case(4):
                 System.out.println("Enter owner password to manage the shop:");
@@ -161,27 +174,30 @@ public class main {
                 if (password==1234){
                     shopController(existingClients,availableProducts,startProducts);
                 }
-                else terminal(existingClients,availableProducts);
+                else {
+                    System.out.println("\nInvalid password\n");
+                    terminal(existingClients,availableProducts,startProducts);
+                }
             case(5):
                 System.out.println("Good bye");
                 System. exit(0);
 
             default:
                 System.err.println("Invalid input");
-                terminal(existingClients,availableProducts);
+                terminal(existingClients,availableProducts,startProducts);
 
 
 
         }} catch (InputMismatchException e) {
             System.err.println("Invalid input");
-            terminal(existingClients,availableProducts);
+            terminal(existingClients,availableProducts,startProducts);
         }
         catch (NoSuchElementException d){
             System.exit(0);
 
         }
      }
-     static void cases(ArrayList<Product> availableProducts,Client client,ArrayList<Client> clients) throws CloneNotSupportedException {
+     static void cases(ArrayList<Product> availableProducts, Client client, ArrayList<Client> clients, ArrayList<Product> startProducts) throws CloneNotSupportedException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("1. Add product\n2. Show your cart\n3. Change an amount\n4. Make order\n5. Delete item\n6. Clear cart\n7. Show your orders\n8. Exit to main menu");
         try{
@@ -202,7 +218,7 @@ public class main {
                             int id = Integer.parseInt(enter);
                             if (id <= 0 || id > availableProducts.size()) {
                                 System.out.println("No such product");
-                                cases(availableProducts, client, clients);
+                                cases(availableProducts, client, clients, startProducts);
                                 break;
                             }
                             System.out.print("Amount: ");
@@ -212,7 +228,7 @@ public class main {
                                 System.out.println("Do you want to continue? \n 1. yes \n 2. no ");
                                 t = scanner.nextInt();
                                 if (t == 2) {
-                                    cases(availableProducts, client, clients);
+                                    cases(availableProducts, client, clients, startProducts);
                                     break;
                                 }
                             }
@@ -221,14 +237,14 @@ public class main {
                             if (!enter.equalsIgnoreCase("back")) {
                                 System.out.println("Invalid input");
                             }
-                            cases(availableProducts, client, clients);
+                            cases(availableProducts, client, clients, startProducts);
                             break;
 
                         }
                     }
             case(2):
                 client.cart.showProducts();
-                cases(availableProducts,client,clients);
+                cases(availableProducts,client,clients, startProducts);
                 break;
             case (3):
                 Scanner sc = new Scanner(System.in);
@@ -251,7 +267,7 @@ public class main {
                     }
                 }
                     client.cart.showProducts();
-                    cases(availableProducts, client, clients);
+                    cases(availableProducts, client, clients, startProducts);
                     break;
             case(4):
                 Scanner in = new Scanner(System.in);
@@ -289,7 +305,7 @@ public class main {
                 else {
                     System.out.println("Your cart is empty");
                 }
-                cases(availableProducts,client,clients);
+                cases(availableProducts,client,clients, startProducts);
                 break;
 
             case(5):
@@ -310,11 +326,11 @@ public class main {
 
                 }
                 client.cart.showProducts();
-                cases(availableProducts,client,clients);
+                cases(availableProducts,client,clients, startProducts);
                 break;
             case(6):
                 client.cart.clearCart(availableProducts);
-                cases(availableProducts,client,clients);
+                cases(availableProducts,client,clients, startProducts);
                 break;
             case(7):
                 Scanner enter = new Scanner(System.in);
@@ -323,7 +339,7 @@ public class main {
                     key = enter.nextInt();
                     if (key==1){
                         client.showInfo();
-                        cases(availableProducts, client, clients);
+                        cases(availableProducts, client, clients, startProducts);
                         break;
                     }
                     else if (key==2){
@@ -331,29 +347,29 @@ public class main {
                             client.stats();
                         }
                         else client.showInfo();
-                        cases(availableProducts, client, clients);
+                        cases(availableProducts, client, clients, startProducts);
                         break;
                     }
                     else if (key==3) {
-                        cases(availableProducts, client, clients);
+                        cases(availableProducts, client, clients, startProducts);
                         break;
                     }
                 } catch (CloneNotSupportedException e) {
                     System.out.println("Invalid input");
-                    cases(availableProducts,client,clients);
+                    cases(availableProducts,client,clients, startProducts);
                 }
 
             case(8):
                 scanProducts(availableProducts);
-                terminal(clients,availableProducts);
-                cases(availableProducts,client,clients);
+                terminal(clients,availableProducts,startProducts);
+                cases(availableProducts,client,clients, startProducts);
             default:
                 System.err.println("Invalid input");
-                cases(availableProducts,client,clients);
+                cases(availableProducts,client,clients, startProducts);
         }
         } catch (InputMismatchException e) {
            System.err.println("Invalid input");
-            cases(availableProducts,client,clients);
+            cases(availableProducts,client,clients, startProducts);
         }
         catch (NoSuchElementException d){
             System.exit(0);
@@ -375,13 +391,16 @@ public class main {
 
     public static void main(String[] args) throws CloneNotSupportedException {
         ArrayList<Product> availableProducts = new ArrayList<>();
+        ArrayList<Product> startProducts = new ArrayList<>();
         System.out.println("\nnotice:\nTo work with menus please enter the number of action you want to do.");
         System.out.println("------------------------------------------------------------------\n\n");
         scanProducts(availableProducts);
-        startProducts= (ArrayList<Product>) availableProducts.clone();
+        for (Product availableProduct : availableProducts) {
+            startProducts.add(availableProduct.clone());
+        }
         ArrayList<Client> clients = new ArrayList<>();
         System.out.println("Welcome to our shop!\nWhat do you want?");
-        terminal(clients,availableProducts);
+        terminal(clients,availableProducts,startProducts);
 
 
 
