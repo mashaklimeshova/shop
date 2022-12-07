@@ -1,8 +1,6 @@
-import java.util.ArrayList;
 import java.util.Random;
 //Валявская
 class Order {
-    private int hash=137;
     Random rand = new Random();
     int orderId, clientId;
     Cart cart;
@@ -14,6 +12,7 @@ class Order {
     }
     @Override
     public int hashCode() {
+        int hash = 137;
         return (clientId+1) * cart.hashCode() + hash;
     }
 }
